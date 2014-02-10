@@ -8,15 +8,17 @@
  */
 
 
-#include <GL/freeglut.h>
+#include <GL/freeglut_std.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <cstdio>
 #include <cstdlib>
 
-#include "Camera.h"
-#include "GlutUtils.h"
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "Scene.h"
+#include "devices/Keyboard.h"
+#include "devices/Mouse.h"
+#include "scene/Camera.h"
+#include "scene/Scene.h"
+#include "utils/GlutUtils.h"
 
 Scene scene;
 Camera camera;
@@ -44,7 +46,7 @@ void initOpenGlEnvironment(int argc, char **argv) {
     glutIgnoreKeyRepeat(1); //TODO co to robi? i jeszcze to: glutSetKeyRepeat()
 
 
-    //TODO czy coœ z tego siê przyda?
+    //TODO czy coï¿½ z tego siï¿½ przyda?
     ////	GLfloat mat_ambient[]    = { 1.0, 1.0,  1.0, 1.0 };
     ////	GLfloat mat_specular[]   = { 0.7, 0.7,  0.7, 1.0 };
     ////	GLfloat light_position[] = { 0.0, 0.0, 30.0, 1.0 };
@@ -81,7 +83,7 @@ void display() {
     glutSwapBuffers();
     ////	glFlush(); //oproznia wszystkie bufory nakazujac wykonac sie funkcjom, ktore czekaly na buforowane dane
     //	//zapewnia wykonanie sie funkcji OpenGLa w "skonczonym czasie" (wedlug dokumentacji)
-    ////	Sleep(5); //TODO czy potrzebne?, na Linuxie by³oby: sched_yield()
+    ////	Sleep(5); //TODO czy potrzebne?, na Linuxie byï¿½oby: sched_yield()
 }
 
 void onWindowResize(int width, int height) {
@@ -103,7 +105,7 @@ void onWindowResize(int width, int height) {
 void onKeyDown(unsigned char asciiKey, int mouseX, int mouseY) {
 //	debug("key down: " + asciiKey);
     if(asciiKey == 27) { // ESC
-    	//TODO sprz¹tanie
+    	//TODO sprzï¿½tanie
         exit(0);
     }
 
@@ -133,7 +135,7 @@ void onTimerFire(int passedValue) {
 void onIdle() {
 	display();
 	//void animateExplosion() {
-	//	//TODO sprawdzanie czasu, albo tylko liczenie FPSów, mo¿e ju¿ bez u¿ycia timera?
+	//	//TODO sprawdzanie czasu, albo tylko liczenie FPSï¿½w, moï¿½e juï¿½ bez uï¿½ycia timera?
 	//	glutPostRedisplay();
 	//}
 }
@@ -175,7 +177,7 @@ void addEventListeners() {
 }
 
 int main (int argc, char **argv) {
-//	// TODO usun¹æ jeœli nie korzystasz z stdout
+//	// TODO usunï¿½ï¿½ jeï¿½li nie korzystasz z stdout
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
 

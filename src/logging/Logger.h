@@ -8,11 +8,11 @@
 #ifndef DEBUGGER_H_
 #define DEBUGGER_H_
 
-class Debugger {
+class Logger {
 public:
 
-    static Debugger& getInstance() {
-        static Debugger instance; // Guaranteed to be destroyed.
+    static Logger& getInstance() {
+        static Logger instance; // Guaranteed to be destroyed.
                               // Instantiated on first use.
         return instance;
     }
@@ -20,13 +20,13 @@ public:
 private:
 //    const int MAX_GUI_LINES_NUMBER;
 
-    Debugger();                   // Constructor? (the {} brackets) are needed here.
+    Logger();                   // Constructor? (the {} brackets) are needed here.
     // Dont forget to declare these two. You want to make sure they
     // are unaccessable otherwise you may accidently get copies of
     // your singleton appearing.
-    Debugger(Debugger const&);              // Don't Implement
-    void operator=(Debugger const&); // Don't implement
-	virtual ~Debugger(); //TODO potrzebny?
+    Logger(Logger const&);              // Don't Implement
+    void operator=(Logger const&); // Don't implement
+	virtual ~Logger(); //TODO potrzebny?
 
 //    std::string guiTextLines[MAX_GUI_LINES_NUMBER];
 };

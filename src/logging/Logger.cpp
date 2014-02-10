@@ -5,14 +5,14 @@
  *      Author: Przemo
  */
 
-#include "Debugger.h"
+#include "Logger.h"
 
-Debugger::Debugger() {
+Logger::Logger() {
 	// TODO Auto-generated constructor stub
 
 }
 
-Debugger::~Debugger() {
+Logger::~Logger() {
 	// TODO Auto-generated destructor stub
 }
 

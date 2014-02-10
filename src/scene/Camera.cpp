@@ -8,12 +8,14 @@
 
 #include "Camera.h"
 
-#include <GL/freeglut.h>
+#include <GL/freeglut_std.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <cmath>
 
-#include "GlutUtils.h"
-#include "Keyboard.h"
-#include "Mouse.h"
+#include "../devices/Keyboard.h"
+#include "../devices/Mouse.h"
+#include "../utils/GlutUtils.h"
 
 Camera::Camera() {
 	// TODO Auto-generated constructor stub
@@ -58,7 +60,7 @@ void Camera::rotate(int mouseX, int mouseY) {
 		int dy = mouseY - getWindowMiddleY();
 
 		horizontalAngle += rotationSpeed * dx;
-		verticalAngle += rotationSpeed * dy * -1; // TODO coœ o mouse invert
+		verticalAngle += rotationSpeed * dy * -1; // TODO coï¿½ o mouse invert
 		if(verticalAngle > M_PI_2) {
 			verticalAngle = M_PI_2;
 		} else if(verticalAngle < -M_PI_2) {
@@ -102,7 +104,7 @@ void Camera::moveParallelToView(float amount) {
 }
 
 /**
- * Musimy byæ na stosie macierzy obiektów
+ * Musimy byï¿½ na stosie macierzy obiektï¿½w
  */
 void Camera::update(Keyboard* keyboard, Mouse* mouse) {
 	if(fpsModeOn) {
