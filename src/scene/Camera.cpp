@@ -7,15 +7,13 @@
 
 
 #include "Camera.h"
-
-#include <GL/freeglut_std.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "../utils/OpenGLInclude.h"
 #include <cmath>
 
 #include "../devices/Keyboard.h"
 #include "../devices/Mouse.h"
 #include "../utils/GlutUtils.h"
+#include "../utils/Logger.h"
 
 Camera::Camera() {
 	// TODO Auto-generated constructor stub
@@ -23,17 +21,18 @@ Camera::Camera() {
 	viewMinDistance = 0.1;
 	viewMaxDistance = 100.0;
 
-	fpsModeOn = false;
 	rotationSpeed = 0.01;
-	horizontalAngle = 0.0;
-	verticalAngle = 0.0;
-	movementSpeed = 0.1;
+	horizontalAngle = 1.6;
+	verticalAngle = 0.2;
+	movementSpeed = 0.5;
 	positionX = 0.0;
-	positionY = 0.0;
-	positionZ = 0.0;
-	directionX = 0.0;
-	directionY = 0.0;
-	directionZ = 1.0;
+	positionY = 8.0;
+	positionZ = 33.0;
+
+	fpsModeOn = false;
+	directionX = cos(horizontalAngle) * cos(verticalAngle);
+	directionY = sin(verticalAngle);
+	directionZ = sin(horizontalAngle) * cos(verticalAngle);
 
 }
 
@@ -60,7 +59,7 @@ void Camera::rotate(int mouseX, int mouseY) {
 		int dy = mouseY - getWindowMiddleY();
 
 		horizontalAngle += rotationSpeed * dx;
-		verticalAngle += rotationSpeed * dy * -1; // TODO co� o mouse invert
+		verticalAngle += rotationSpeed * dy;
 		if(verticalAngle > M_PI_2) {
 			verticalAngle = M_PI_2;
 		} else if(verticalAngle < -M_PI_2) {
@@ -82,19 +81,19 @@ void Camera::moveDown() {
 }
 
 void Camera::moveForward() {
-	moveParallelToView(movementSpeed);
-}
-
-void Camera::moveBackward() {
 	moveParallelToView(-movementSpeed);
 }
 
+void Camera::moveBackward() {
+	moveParallelToView(movementSpeed);
+}
+
 void Camera::moveRight() {
-	movePerpendicularToView(-movementSpeed);
+	movePerpendicularToView(movementSpeed);
 }
 
 void Camera::moveLeft() {
-	movePerpendicularToView(movementSpeed);
+	movePerpendicularToView(-movementSpeed);
 }
 
 void Camera::moveParallelToView(float amount) {
@@ -104,7 +103,7 @@ void Camera::moveParallelToView(float amount) {
 }
 
 /**
- * Musimy by� na stosie macierzy obiekt�w
+ * Musimy być na stosie macierzy obiektów
  */
 void Camera::update(Keyboard* keyboard, Mouse* mouse) {
 	if(fpsModeOn) {
@@ -130,11 +129,9 @@ void Camera::update(Keyboard* keyboard, Mouse* mouse) {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); //TODO potrzebne? tak samo jak matrix mode?
-	gluLookAt(positionX, positionY, positionZ, positionX + directionX, positionY + directionY, positionZ + directionZ, 0.0, 1.0, 0.0);
-}
-
-std::string Camera::debugInfo() {
-	return "";
+	gluLookAt(positionX, positionY, positionZ, positionX - directionX, positionY - directionY, positionZ - directionZ, 0.0, 1.0, 0.0);
+	Logger::getInstance().addLineToScreen(2, "x %f y %f z %f dirX %f dirY %f dirZ %f", positionX, positionY, positionZ, directionX, directionY, directionZ);
+	Logger::getInstance().addLineToScreen(3, "vAng %f hAng %f", verticalAngle, horizontalAngle);
 }
 
 void Camera::movePerpendicularToView(float amount) {

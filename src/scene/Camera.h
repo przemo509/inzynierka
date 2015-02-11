@@ -51,6 +51,8 @@ private:
 
 	void moveParallelToView(float amount);
 	void movePerpendicularToView(float amount);
+
+	friend class ExplosionVisualization;
 };
 
 #endif /* CAMERA2_H_ */
