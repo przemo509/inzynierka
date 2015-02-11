@@ -8,17 +8,23 @@
  */
 
 
-#include <GL/freeglut_std.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "utils/OpenGLInclude.h"
+
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 
 #include "devices/Keyboard.h"
 #include "devices/Mouse.h"
 #include "scene/Camera.h"
 #include "scene/Scene.h"
 #include "utils/GlutUtils.h"
+#include "utils/ImageUtils.h"
+#include "utils/Logger.h"
+#include "utils/Timer.h"
+#include "Config.h"
+
+using namespace std;
 
 Scene scene;
 Camera camera;
@@ -28,23 +34,41 @@ bool blockMouseMove = false;
 
 const int WINDOW_INIT_POS_X = 100;
 const int WINDOW_INIT_POS_Y = 100;
-const int WINDOW_WIDTH = 1024;
-const int WINDOW_HEIGHT = 768;
-const char* WINDOW_TITLE = "Symulacja wulkanu";
+const int WINDOW_WIDTH = 1280;
+const int WINDOW_HEIGHT = 720;
+const string WINDOW_TITLE = "Symulacja wulkanu";
 
 void initOpenGlEnvironment(int argc, char **argv) {
 	glutInit(&argc, argv);
-
 	glutInitWindowPosition(WINDOW_INIT_POS_X, WINDOW_INIT_POS_Y);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow(WINDOW_TITLE);
+	glutCreateWindow(WINDOW_TITLE.c_str());
 
-    glClearColor(0.0, 0.0, 0.0, 1.0); //clear the screen to black TODO czy wystarczy tylko raz?
+	glewInit();
+	scene.visualization.initFBO(); // musi być po glewInit(), więc nie mogłobyć w konstruktorze Scene()
+
+    glClearColor(0.0, 0.0, 0.0, 1.0); // czyszczenie ekranu na czarno
 
     glutIgnoreKeyRepeat(1); //TODO co to robi? i jeszcze to: glutSetKeyRepeat()
 
+//		TODO MENU pod prawym przyciskiem myszy
+//    msg_submenu = glutCreateMenu(selectMessage);
+//    glutAddMenuEntry("abc", 1);
+//    glutAddMenuEntry("ABC", 2);
+//    color_submenu = glutCreateMenu(selectColor);
+//    glutAddMenuEntry("Green", 1);
+//    glutAddMenuEntry("Red", 2);
+//    glutAddMenuEntry("White", 3);
+//    glutCreateMenu(selectFont);
+//    glutAddMenuEntry("9 by 15", 0);
+//    glutAddMenuEntry("Times Roman 10", 1);
+//    glutAddMenuEntry("Times Roman 24", 2);
+//    glutAddSubMenu("Messages", msg_submenu);
+//    glutAddSubMenu("Color", color_submenu);
+//    glutAttachMenu(GLUT_RIGHT_BUTTON);
+//    glutMainLoop();
 
     //TODO czy co� z tego si� przyda?
     ////	GLfloat mat_ambient[]    = { 1.0, 1.0,  1.0, 1.0 };
@@ -68,26 +92,32 @@ void initOpenGlEnvironment(int argc, char **argv) {
 }
 
 void display() {
-//	debug("display");
-	glClearColor(0, 0, 0, 1);
+    Timer::getInstance().incrementFrame();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
     glLoadIdentity();
 
     camera.update(&keyboard, &mouse);
 
-    glColor3f(0,1,0);
-    glutWireTeapot(0.5);
+    scene.draw(&camera);
+	Logger::getInstance().printOnScreen();
 
-    scene.draw();
+	if(config::dumpFrames) {
+		char frameString[20];
+		string fileName = string("test_") + itoa(Timer::getInstance().getCurrentFrame(), frameString, 10) + ".tga";
+		dumpScreenToImage(fileName);
+	}
 
     glutSwapBuffers();
-    ////	glFlush(); //oproznia wszystkie bufory nakazujac wykonac sie funkcjom, ktore czekaly na buforowane dane
-    //	//zapewnia wykonanie sie funkcji OpenGLa w "skonczonym czasie" (wedlug dokumentacji)
-    ////	Sleep(5); //TODO czy potrzebne?, na Linuxie by�oby: sched_yield()
+
+
+//    // check OpenGL error
+//    	GLenum err;
+//    	while ((err = glGetError()) != GL_NO_ERROR) {
+//    		printf("OpenGL error: %d\n", err);
+//    	}
 }
 
-void onWindowResize(int width, int height) {
-//	debug("resize");
+void reshape(int width, int height) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -103,54 +133,41 @@ void onWindowResize(int width, int height) {
 }
 
 void onKeyDown(unsigned char asciiKey, int mouseX, int mouseY) {
-//	debug("key down: " + asciiKey);
-    if(asciiKey == 27) { // ESC
-    	//TODO sprz�tanie
+    keyboard.asciiKeyDown(asciiKey);
+    if(keyboard.isAsciiKeyPressed(27)) { // ESC
+    	//TODO sprzątanie
         exit(0);
     }
 
-    if(asciiKey == ' ') {
+    if(keyboard.isAsciiKeyPressed('\t')) {
     	camera.toggleFpsMode();
     }
+    if(keyboard.isAsciiKeyPressed('r')) {
+    	scene.simulation.setStartingConditions();
+    }
+    if(keyboard.isAsciiKeyPressed('q')) {
+    	scene.simulation.tooglePlayback();
+    }
 
-    keyboard.asciiKeyDown(asciiKey);
 }
 
 void onKeyUp(unsigned char asciiKey, int mouseX, int mouseY) {
-//	debug("key up: " + asciiKey);
 	keyboard.asciiKeyUp(asciiKey);
 }
 
-void calculateScene() {
-//	debug("calculate scene");
-	camera.update(&keyboard, &mouse);
-}
-
-void onTimerFire(int passedValue) {
-//	debug("timer");
-	calculateScene();
-    glutTimerFunc(1, onTimerFire, 0);
-}
-
 void onIdle() {
-	display();
-	//void animateExplosion() {
-	//	//TODO sprawdzanie czasu, albo tylko liczenie FPS�w, mo�e ju� bez u�ycia timera?
-	//	glutPostRedisplay();
-	//}
+	scene.simulation.proceed();
+	glutPostRedisplay();
 }
 
 void onMouseClick(int button, int state, int mouseX, int mouseY) {
-//	debug("mouse click");
 	mouse.toggleButton(button, state);
 }
 
 void onMouseMove(int mouseX, int mouseY) {
-//	debug("mouse move");
 	if(blockMouseMove || !camera.isFpsModeOn()) {
-//		debug("mouse move blocked");
 		blockMouseMove = false;
-		//zabezpieczenie przed rekurencyjnym wykonaniem przez glutWarpPointer
+		//zabezpieczenie przed rekurencyjnym wykonaniem w glutWarpPointer poniżej
 		return;
 	}
 
@@ -162,7 +179,7 @@ void onMouseMove(int mouseX, int mouseY) {
 
 void addEventListeners() {
     glutDisplayFunc(display);
-    glutReshapeFunc(onWindowResize);
+    glutReshapeFunc(reshape);
 
     glutMouseFunc(onMouseClick);
     glutMotionFunc(onMouseMove);
@@ -173,20 +190,17 @@ void addEventListeners() {
 
     glutIdleFunc(onIdle);
 
-//    glutTimerFunc(1, onTimerFire, 0);
+//    glutTimerFunc(1, onTimerFire, 0); todo
 }
 
 int main (int argc, char **argv) {
-//	// TODO usun�� je�li nie korzystasz z stdout
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
 
-//	debug("START");
 
 	initOpenGlEnvironment(argc, argv);
 	addEventListeners();
 	glutMainLoop();
-//	debug("END");
     return 0;
 
 }
