@@ -6,6 +6,7 @@
  */
 
 #include "Keyboard.h"
+#include <ctype.h>
 
 Keyboard::Keyboard() {
 	// TODO Auto-generated constructor stub
@@ -21,9 +22,11 @@ bool Keyboard::isAsciiKeyPressed(unsigned char key) {
 }
 
 void Keyboard::asciiKeyDown(unsigned char key) {
-	asciiKeys[key] = true;
+	asciiKeys[tolower(key)] = true;
+	asciiKeys[toupper(key)] = true;
 }
 
 void Keyboard::asciiKeyUp(unsigned char key) {
-	asciiKeys[key] = false;
+	asciiKeys[tolower(key)] = false;
+	asciiKeys[toupper(key)] = false;
 }
