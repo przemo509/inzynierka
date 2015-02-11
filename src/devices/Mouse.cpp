@@ -6,8 +6,7 @@
  */
 
 #include "Mouse.h"
-
-#include <GL/freeglut.h>
+#include "../utils/OpenGLInclude.h"
 
 Mouse::Mouse() {
 	// TODO Auto-generated constructor stub
