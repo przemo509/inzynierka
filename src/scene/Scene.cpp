@@ -8,14 +8,14 @@
 #include "Scene.h"
 
 Scene::Scene() {
-	// TODO Auto-generated constructor stub
-
 }
 
 Scene::~Scene() {
 	// TODO Auto-generated destructor stub
 }
 
-void Scene::draw() {
-	skybox.draw(); //skybox na koñcu, ¿eby niepotrzebnie nie rysowaæ jego zas³oniêtych fragmentów
+void Scene::draw(Camera *camera) {
+
+	skybox.draw();
+    visualization.drawDensities(camera, &simulation);
 }

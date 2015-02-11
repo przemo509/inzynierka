@@ -8,13 +8,18 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
+#include "../simulation/ExplosionSimulation.h"
+#include "../simulation/ExplosionVisualization.h"
+#include "Camera.h"
 #include "Skybox.h"
 
 class Scene {
 public:
 	Scene();
 	virtual ~Scene();
-	void draw();
+	void draw(Camera *camera);
+	ExplosionSimulation simulation;
+	ExplosionVisualization visualization;
 
 private:
 	Skybox skybox;
