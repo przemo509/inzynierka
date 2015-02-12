@@ -36,6 +36,7 @@ ExplosionVisualization::ExplosionVisualization():gauss{
 	corners[6] = Point(origin.x + size/2, origin.y + size, origin.z - size/2);
 	corners[7] = Point(origin.x + size/2, origin.y + size, origin.z + size/2);
 
+	textureResolution = config::textureResolution;
     render = new float*[textureResolution];
     for(int i = 0; i < textureResolution; ++i) {
     	render[i] = new float[textureResolution];
@@ -213,7 +214,6 @@ void ExplosionVisualization::drawDensities(Camera *camera, ExplosionSimulation *
     	}
     }
     float renderElementSize = width / textureResolution;
-    float distanceFactor = 0.03f;
 
     Vector move = Vector(origin, startCorner);
 
@@ -235,14 +235,12 @@ void ExplosionVisualization::drawDensities(Camera *camera, ExplosionSimulation *
     			int renderX = dx / renderElementSize;
     			int renderY = dy / renderElementSize;
     			float distance = toCamera.length();
-    			float baseValue = densValue * distance * distanceFactor;
+    			float baseValue = densValue * distance * config::distanceFactor;
     			for(int gj = 0; gj < gaussSize; ++gj) {
     				for(int gi =0; gi < gaussSize; ++gi) {
     					int x = renderX - gi - gaussSize/2;
     					int y = renderY - gj - gaussSize/2;
-    					if(baseValue > 0.5) {
-    						render[x][y] = 0.9;
-    					} else if(x >= 0 && x < textureResolution && y >= 0 && y < textureResolution) {
+    					if(x >= 0 && x < textureResolution && y >= 0 && y < textureResolution) {
     						render[x][y] += baseValue * gauss[gi][gj];
     					}
     				}
@@ -284,8 +282,6 @@ void ExplosionVisualization::drawDensities(Camera *camera, ExplosionSimulation *
     		int value = render[i][j] * 255;
     		if(value > 255) {
 				glColor3ub(255, 255, 255);
-			} else if(value == 0) {
-				glColor3ub(255, 0, 255);
 			} else {
     		    glColor3ub(value, value, value);
     		}

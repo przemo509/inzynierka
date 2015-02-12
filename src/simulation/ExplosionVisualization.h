@@ -28,7 +28,7 @@ class ExplosionVisualization {
 		Point *corners;
 		Point startCorner;
 
-		static const int textureResolution = 256;
+		int textureResolution;
 		float **render;
 		GLuint textureID, frameBufferID, depthRenderBufferID;
 

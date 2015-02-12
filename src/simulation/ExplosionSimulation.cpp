@@ -119,7 +119,7 @@ void ExplosionSimulation::addSources() {
 	for(int k = centerZ - radius; k < centerZ + radius; ++k) {
 		for(int j = 0; j < height; ++j) {
 			for(int i = centerX - radius; i < centerX + radius; ++i) {
-				dens[i][j][k] += dt / sqrt((i-centerX)*(i-centerX) + (k-centerZ)*(k-centerZ)) * config::mainSourceDensity;
+				dens[i][j][k] += dt / (sqrt((i-centerX)*(i-centerX) + (k-centerZ)*(k-centerZ)) + 0.01) * config::mainSourceDensity;
 				vx[i][j][k] += dt * sin(i-centerX) * config::mainSourceSpreadFactor; // na zewnątrz
 				vz[i][j][k] += dt * sin(k-centerZ) * config::mainSourceSpreadFactor; // na zewnątrz
 				if(currentFrame < config::mainSourceStartPhase2Frame) {
@@ -139,8 +139,9 @@ void ExplosionSimulation::addForces() {
 	for(int k = 0; k < size; ++k) {
 		for(int j = 0; j < size; ++j) {
 			for(int i = 0; i < size; ++i) {
-				vy[i][j][k] += dt * -1.0 * config::gravityFactor;
-				if(i < 3) {
+				vy[i][j][k] += dt * (-1.0 * config::gravityFactor
+						+ dens[i][j][k] * config::thermalBuoyancyFactor);
+				if(i < 5) {
 					vx[i][j][k] += dt * config::windFactor;
 				}
 			}
