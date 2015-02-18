@@ -12,28 +12,28 @@
 #include <vector>
 
 class Logger {
-public:
+    public:
 
-    static Logger& getInstance() {
-        static Logger instance; // Guaranteed to be destroyed.
-                              // Instantiated on first use.
-        return instance;
-    }
+        static Logger& getInstance() {
+            static Logger instance; // Guaranteed to be destroyed.
+                                    // Instantiated on first use.
+            return instance;
+        }
 
-    void printOnScreen();
-    void addLineToScreen(int lineNumber, char* format, ...);
+        void printOnScreen();
+        void addLineToScreen(int lineNumber, char* format, ...);
 
-private:
+    private:
 
-    Logger();                   // Constructor? (the {} brackets) are needed here.
-    // Dont forget to declare these two. You want to make sure they
-    // are unaccessable otherwise you may accidently get copies of
-    // your singleton appearing.
-    Logger(Logger const&);              // Don't Implement
-    void operator=(Logger const&); // Don't implement
-	virtual ~Logger(); //TODO potrzebny?
+        Logger();                   // Constructor? (the {} brackets) are needed here.
+        // Dont forget to declare these two. You want to make sure they
+        // are unaccessable otherwise you may accidently get copies of
+        // your singleton appearing.
+        Logger(Logger const&);              // Don't Implement
+        void operator=(Logger const&); // Don't implement
+        virtual ~Logger(); //TODO potrzebny?
 
-	std::vector<std::string> guiTextLines;
+        std::vector<std::string> guiTextLines;
 };
 
 #endif /* DEBUGGER_H_ */

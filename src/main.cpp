@@ -7,7 +7,6 @@
  *      Author: Przemo
  */
 
-
 #include "utils/OpenGLInclude.h"
 
 #include <cstdio>
@@ -39,15 +38,15 @@ const int WINDOW_HEIGHT = 720;
 const string WINDOW_TITLE = "Symulacja wulkanu";
 
 void initOpenGlEnvironment(int argc, char **argv) {
-	glutInit(&argc, argv);
-	glutInitWindowPosition(WINDOW_INIT_POS_X, WINDOW_INIT_POS_Y);
-	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    glutInit(&argc, argv);
+    glutInitWindowPosition(WINDOW_INIT_POS_X, WINDOW_INIT_POS_Y);
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow(WINDOW_TITLE.c_str());
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutCreateWindow(WINDOW_TITLE.c_str());
 
-	glewInit();
-	scene.visualization.initFBO(); // musi być po glewInit(), więc nie mogłobyć w konstruktorze Scene()
+    glewInit();
+    scene.visualization.initFBO(); // musi być po glewInit(), więc nie mogłobyć w konstruktorze Scene()
 
     glClearColor(0.0, 0.0, 0.0, 1.0); // czyszczenie ekranu na czarno
 
@@ -99,16 +98,15 @@ void display() {
     camera.update(&keyboard, &mouse);
 
     scene.draw(&camera);
-	Logger::getInstance().printOnScreen();
+    Logger::getInstance().printOnScreen();
 
-	if(config::dumpFrames) {
-		char frameString[20];
-		string fileName = string("test_") + itoa(Timer::getInstance().getCurrentFrame(), frameString, 10) + ".tga";
-		dumpScreenToImage(fileName);
-	}
+    if (config::dumpFrames) {
+        char frameString[20];
+        string fileName = string("test_") + itoa(Timer::getInstance().getCurrentFrame(), frameString, 10) + ".tga";
+        dumpScreenToImage(fileName);
+    }
 
     glutSwapBuffers();
-
 
 //    // check OpenGL error
 //    	GLenum err;
@@ -121,9 +119,9 @@ void reshape(int width, int height) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    if(height == 0) {
-		height = 1;
-	}
+    if (height == 0) {
+        height = 1;
+    }
     GLfloat screenRatio = 1.0 * width / height;
 
     glViewport(0, 0, width, height);
@@ -134,47 +132,47 @@ void reshape(int width, int height) {
 
 void onKeyDown(unsigned char asciiKey, int mouseX, int mouseY) {
     keyboard.asciiKeyDown(asciiKey);
-    if(keyboard.isAsciiKeyPressed(27)) { // ESC
-    	//TODO sprzątanie
+    if (keyboard.isAsciiKeyPressed(27)) { // ESC
+        //TODO sprzątanie
         exit(0);
     }
 
-    if(keyboard.isAsciiKeyPressed('\t')) {
-    	camera.toggleFpsMode();
+    if (keyboard.isAsciiKeyPressed('\t')) {
+        camera.toggleFpsMode();
     }
-    if(keyboard.isAsciiKeyPressed('r')) {
-    	scene.simulation.setStartingConditions();
+    if (keyboard.isAsciiKeyPressed('r')) {
+        scene.simulation.setStartingConditions();
     }
-    if(keyboard.isAsciiKeyPressed('q')) {
-    	scene.simulation.tooglePlayback();
+    if (keyboard.isAsciiKeyPressed('q')) {
+        scene.simulation.tooglePlayback();
     }
 
 }
 
 void onKeyUp(unsigned char asciiKey, int mouseX, int mouseY) {
-	keyboard.asciiKeyUp(asciiKey);
+    keyboard.asciiKeyUp(asciiKey);
 }
 
 void onIdle() {
-	scene.simulation.proceed();
-	glutPostRedisplay();
+    scene.simulation.proceed();
+    glutPostRedisplay();
 }
 
 void onMouseClick(int button, int state, int mouseX, int mouseY) {
-	mouse.toggleButton(button, state);
+    mouse.toggleButton(button, state);
 }
 
 void onMouseMove(int mouseX, int mouseY) {
-	if(blockMouseMove || !camera.isFpsModeOn()) {
-		blockMouseMove = false;
-		//zabezpieczenie przed rekurencyjnym wykonaniem w glutWarpPointer poniżej
-		return;
-	}
+    if (blockMouseMove || !camera.isFpsModeOn()) {
+        blockMouseMove = false;
+        //zabezpieczenie przed rekurencyjnym wykonaniem w glutWarpPointer poniżej
+        return;
+    }
 
-	camera.rotate(mouseX, mouseY);
+    camera.rotate(mouseX, mouseY);
 
-	glutWarpPointer(getWindowMiddleX(), getWindowMiddleY());
-	blockMouseMove = true;
+    glutWarpPointer(getWindowMiddleX(), getWindowMiddleY());
+    blockMouseMove = true;
 }
 
 void addEventListeners() {
@@ -193,14 +191,13 @@ void addEventListeners() {
 //    glutTimerFunc(1, onTimerFire, 0); todo
 }
 
-int main (int argc, char **argv) {
-	setvbuf(stdout, NULL, _IONBF, 0);
-	setvbuf(stderr, NULL, _IONBF, 0);
+int main(int argc, char **argv) {
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
 
-
-	initOpenGlEnvironment(argc, argv);
-	addEventListeners();
-	glutMainLoop();
+    initOpenGlEnvironment(argc, argv);
+    addEventListeners();
+    glutMainLoop();
     return 0;
 
 }

@@ -13,6 +13,4 @@
 
 #include <GL/freeglut.h>
 
-
-
 #endif /* OPENGLINCLUDE_H_ */

@@ -14,15 +14,15 @@
 #include "Skybox.h"
 
 class Scene {
-public:
-	Scene();
-	virtual ~Scene();
-	void draw(Camera *camera);
-	ExplosionSimulation simulation;
-	ExplosionVisualization visualization;
+    public:
+        Scene();
+        virtual ~Scene();
+        void draw(Camera *camera);
+        ExplosionSimulation simulation;
+        ExplosionVisualization visualization;
 
-private:
-	Skybox skybox;
+    private:
+        Skybox skybox;
 };
 
 #endif /* SCENE_H_ */

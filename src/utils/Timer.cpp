@@ -12,20 +12,20 @@
 using namespace std;
 
 Timer::Timer() {
-	allFrames = 0;
-	framesInSecond = 0;
-	currTime = 0;
-	prevTime = 0;
+    allFrames = 0;
+    framesInSecond = 0;
+    currTime = 0;
+    prevTime = 0;
 }
 
 Timer::~Timer() {
 }
 
 void Timer::incrementFrame() {
-	++framesInSecond;
-	++allFrames;
-	currTime += 1000.0/32.0;//= glutGet(GLUT_ELAPSED_TIME);
-	Logger::getInstance().addLineToScreen(1, "Frame: %i", framesInSecond);
+    ++framesInSecond;
+    ++allFrames;
+    currTime += 1000.0 / 32.0; //= glutGet(GLUT_ELAPSED_TIME);
+    Logger::getInstance().addLineToScreen(1, "Frame: %i", framesInSecond);
 //	int interval = currTime - prevTime;
 //	if(interval > 1000) {
 //		prevTime = currTime;
@@ -35,9 +35,9 @@ void Timer::incrementFrame() {
 }
 
 int Timer::getCurrentTime() {
-	return currTime;
+    return currTime;
 }
 
 int Timer::getCurrentFrame() {
-	return framesInSecond;
+    return framesInSecond;
 }

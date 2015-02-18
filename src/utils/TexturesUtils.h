@@ -8,8 +8,6 @@
 #ifndef TEXTURESUTILS_H_
 #define TEXTURESUTILS_H_
 
-
-
 ////do tekstur
 //GLUquadric *podloga;
 //GLuint woodTexture; //deskryptor tekstury drewna na podlodze
@@ -127,6 +125,5 @@
 ////	gluQuadricTexture(dark, GL_TRUE);
 ////	darkTexture = LoadBitmap("img/dark.bmp");
 //}
-
 
 #endif /* TEXTURESUTILS_H_ */

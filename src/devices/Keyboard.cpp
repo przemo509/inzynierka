@@ -9,24 +9,24 @@
 #include <ctype.h>
 
 Keyboard::Keyboard() {
-	// TODO Auto-generated constructor stub
+    // TODO Auto-generated constructor stub
 
 }
 
 Keyboard::~Keyboard() {
-	// TODO Auto-generated destructor stub
+    // TODO Auto-generated destructor stub
 }
 
 bool Keyboard::isAsciiKeyPressed(unsigned char key) {
-	return asciiKeys[key];
+    return asciiKeys[key];
 }
 
 void Keyboard::asciiKeyDown(unsigned char key) {
-	asciiKeys[tolower(key)] = true;
-	asciiKeys[toupper(key)] = true;
+    asciiKeys[tolower(key)] = true;
+    asciiKeys[toupper(key)] = true;
 }
 
 void Keyboard::asciiKeyUp(unsigned char key) {
-	asciiKeys[tolower(key)] = false;
-	asciiKeys[toupper(key)] = false;
+    asciiKeys[tolower(key)] = false;
+    asciiKeys[toupper(key)] = false;
 }

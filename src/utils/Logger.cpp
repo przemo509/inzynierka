@@ -12,44 +12,41 @@
 using namespace std;
 
 Logger::Logger() {
-	// TODO Auto-generated constructor stub
-
-	guiTextLines.assign(10, "");
-
+    guiTextLines.assign(10, "");
 }
 
 Logger::~Logger() {
 }
 
 void Logger::printOnScreen() {
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(0.0, glutGet(GLUT_WINDOW_WIDTH), 0.0, glutGet(GLUT_WINDOW_HEIGHT));
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0.0, glutGet(GLUT_WINDOW_WIDTH), 0.0, glutGet(GLUT_WINDOW_HEIGHT));
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
 
-	glColor3f(0.0, 1.0, 0.0); // Green
+    glColor3f(0.0, 1.0, 0.0); // Green
 
-	int lineNumber = 1;
-	void * font = GLUT_BITMAP_9_BY_15;
-	for(vector<string>::iterator v_i = guiTextLines.begin(); v_i != guiTextLines.end(); ++v_i, ++lineNumber) {
-		glRasterPos2i(10, glutGet(GLUT_WINDOW_HEIGHT) - lineNumber*15);
-		string line = *v_i;
-		for(string::iterator s_i = line.begin(); s_i != line.end(); ++s_i) {
-			char c = *s_i;
-			glutBitmapCharacter(font, c);
-		}
-	}
+    int lineNumber = 1;
+    void * font = GLUT_BITMAP_9_BY_15;
+    for (vector<string>::iterator v_i = guiTextLines.begin(); v_i != guiTextLines.end(); ++v_i, ++lineNumber) {
+        glRasterPos2i(10, glutGet(GLUT_WINDOW_HEIGHT) - lineNumber * 15);
+        string line = *v_i;
+        for (string::iterator s_i = line.begin(); s_i != line.end(); ++s_i) {
+            char c = *s_i;
+            glutBitmapCharacter(font, c);
+        }
+    }
 
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 
 }
 //
@@ -64,28 +61,28 @@ void Logger::printOnScreen() {
 //GLUT_BITMAP_HELVETICA_18
 
 void Logger::addLineToScreen(int lineNumber, char* format, ...) {
-		va_list args;	//  Variable argument list
-		int len;		//	String length
-		char * text;	//	Text
+    va_list args;	//  Variable argument list
+    int len;		//	String length
+    char * text;	//	Text
 
-		//  Initialize a variable argument list
-		va_start(args, format);
+    //  Initialize a variable argument list
+    va_start(args, format);
 
-		//  Return the number of characters in the string referenced the list of arguments.
-		//  _vscprintf doesn't count terminating '\0' (that's why +1)
-		len = _vscprintf(format, args) + 1;
+    //  Return the number of characters in the string referenced the list of arguments.
+    //  _vscprintf doesn't count terminating '\0' (that's why +1)
+    len = _vscprintf(format, args) + 1;
 
-		//  Allocate memory for a string of the specified size
-		text = (char *)malloc(len * sizeof(char));
+    //  Allocate memory for a string of the specified size
+    text = (char *) malloc(len * sizeof(char));
 
-		//  Write formatted output using a pointer to the list of arguments
-		vsnprintf(text, len, format, args);
+    //  Write formatted output using a pointer to the list of arguments
+    vsnprintf(text, len, format, args);
 
-		//  End using variable argument list
-		va_end(args);
+    //  End using variable argument list
+    va_end(args);
 
-		guiTextLines[lineNumber] = text;
+    guiTextLines[lineNumber] = text;
 
-		//  Free the allocated memory for the string
-		free(text);
+    //  Free the allocated memory for the string
+    free(text);
 }

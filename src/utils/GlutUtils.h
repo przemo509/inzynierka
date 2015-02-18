@@ -12,26 +12,25 @@
 #include "GeometryUtils.h"
 
 static int getWindowMiddleX() {
-	return glutGet(GLUT_WINDOW_WIDTH) / 2;
+    return glutGet(GLUT_WINDOW_WIDTH) / 2;
 }
 
 static int getWindowMiddleY() {
-	return glutGet(GLUT_WINDOW_HEIGHT) / 2;
+    return glutGet(GLUT_WINDOW_HEIGHT) / 2;
 }
 
 static void drawPoint(const Point &p) {
-	glVertex3f(p.x, p.y, p.z);
+    glVertex3f(p.x, p.y, p.z);
 }
 
 static void drawLine(const Point &a, const Point &b) {
-	drawPoint(a);
-	drawPoint(b);
+    drawPoint(a);
+    drawPoint(b);
 }
 
 static void drawVector(const Point &p, const Vector &v) {
-	drawPoint(p);
-	drawPoint(v.translate(p));
+    drawPoint(p);
+    drawPoint(v.translate(p));
 }
-
 
 #endif /* GLUTUTILS_H_ */
