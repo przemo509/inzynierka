@@ -271,7 +271,7 @@ void ExplosionVisualization::drawRenderToTexture() {
     glBegin(GL_POINTS);
     for (int j = 0; j < textureResolution; ++j) {
         for (int i = 0; i < textureResolution; ++i) {
-            int value = render[i][j] * 255;
+            int value = 1-exp(-render[i][j]) * 255;
             if (value > 255) {
                 glColor3ub(255, 0, 255);
             } else {
