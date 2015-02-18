@@ -351,8 +351,15 @@ void ExplosionSimulation::advect(BoundDirection dir, vect3f d, vect3f d0, vect3f
                 float t0 = 1 - t1;
 
                 // obliczenie wynikowej wartości w komórce [i][j][k]
-                d[i][j][k] = r0 * s0 * t0 * d0[i0][j0][k0] + r0 * s0 * t1 * d0[i0][j0][k1] + r0 * s1 * t0 * d0[i0][j1][k0] + r0 * s1 * t1 * d0[i0][j1][k1]
-                             + r1 * s0 * t0 * d0[i1][j0][k0] + r1 * s0 * t1 * d0[i1][j0][k1] + r1 * s1 * t0 * d0[i1][j1][k0] + r1 * s1 * t1 * d0[i1][j1][k1];
+                d[i][j][k] =
+                        r0 * s0 * t0 * d0[i0][j0][k0] +
+                        r0 * s0 * t1 * d0[i0][j0][k1] +
+                        r0 * s1 * t0 * d0[i0][j1][k0] +
+                        r0 * s1 * t1 * d0[i0][j1][k1] +
+                        r1 * s0 * t0 * d0[i1][j0][k0] +
+                        r1 * s0 * t1 * d0[i1][j0][k1] +
+                        r1 * s1 * t0 * d0[i1][j1][k0] +
+                        r1 * s1 * t1 * d0[i1][j1][k1];
 
             }
         }
