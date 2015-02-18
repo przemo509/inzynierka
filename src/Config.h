@@ -12,6 +12,7 @@ namespace config {
     static const bool autoPlay = true;
     static const bool dumpFrames = true;
     static const bool drawDomain = false;
+    static const int maxFrames = 200;
 
     static const float simulationSpaceSize = 50;
 

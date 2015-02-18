@@ -90,8 +90,16 @@ void initOpenGlEnvironment(int argc, char **argv) {
     ////	glEnable( GL_DEPTH_TEST );
 }
 
+void exitProgram() {
+    //TODO sprzątanie
+    exit(0);
+}
+
 void display() {
     Timer::getInstance().incrementFrame();
+    if(Timer::getInstance().getCurrentFrame() > config::maxFrames) {
+        exitProgram();
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the color buffer and the depth buffer
     glLoadIdentity();
 
@@ -133,8 +141,7 @@ void reshape(int width, int height) {
 void onKeyDown(unsigned char asciiKey, int mouseX, int mouseY) {
     keyboard.asciiKeyDown(asciiKey);
     if (keyboard.isAsciiKeyPressed(27)) { // ESC
-        //TODO sprzątanie
-        exit(0);
+        exitProgram();
     }
 
     if (keyboard.isAsciiKeyPressed('\t')) {
