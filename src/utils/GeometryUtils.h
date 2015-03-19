@@ -10,6 +10,8 @@
 
 #include <cmath>
 
+typedef float *** vect3f;
+
 class Point {
     public:
         float x, y, z;
@@ -49,6 +51,9 @@ class Vector {
 
         void normalize() {
             float len = length();
+            if(len == 0.0) {
+                return;
+            }
             x /= len;
             y /= len;
             z /= len;

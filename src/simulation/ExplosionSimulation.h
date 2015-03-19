@@ -8,7 +8,8 @@
 #ifndef EXPLOSIONSIMULATION_H_
 #define EXPLOSIONSIMULATION_H_
 
-typedef float *** vect3f; //TODO float ***
+#include "../utils/GeometryUtils.h"
+#include "Vortex.h"
 
 enum BoundDirection {
     X_DIR, Y_DIR, Z_DIR, NO_DIR
@@ -31,6 +32,8 @@ class ExplosionSimulation {
         int relaxationSteps;
         bool playbackIsOn;
 
+        Vortex** vortices;
+
         int resX;
 
         void calculateVelocities();
@@ -45,6 +48,7 @@ class ExplosionSimulation {
 
         void addSources();
         void addForces();
+        void addTurbulences();
 
         friend class ExplosionVisualization;
 

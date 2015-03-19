@@ -32,6 +32,7 @@ class ExplosionVisualization {
         float **render;
         GLuint textureID, frameBufferID, depthRenderBufferID;
 
+        void drawVortices(Vortex** vortices, float spaceUnit);
         void drawDomain();
         int getCornerClosestToCamera(Point& cameraPosition);
         Vector getUpDirection(int closest, Plane& plane, Vector& cameraDirection);

@@ -12,13 +12,20 @@ namespace config {
     static const bool autoPlay = true;
     static const bool dumpFrames = true;
     static const bool drawDomain = false;
+    static const bool drawVortices = false;
     static const int maxFrames = 200;
 
-    static const float simulationSpaceSize = 50;
+    static const bool simulateTurbulences = true;
+    static const int vorticesInRow = 7;
+    static const int maxVortices = vorticesInRow * vorticesInRow * vorticesInRow;
+    static const float vortexStrenght = 0.01;
+    static const int vortexMoving = 3;
+
+    static const int simulationSpaceSize = 50;
 
     static const float dt = 0.25;
-    static const float viscosity = 0.001;
-    static const float diffusionRate = 0.001;
+    static const float viscosity = 0.0001;
+    static const float diffusionRate = 0.0001;
 
     static const int mainSourceHeight = 3;
     static const int mainSourceRadius = 5;
@@ -29,9 +36,9 @@ namespace config {
     static const int mainSourceStartFrame = 5;
     static const int mainSourceStartPhase2Frame = 15;
     static const int mainSourceStartPhase3Frame = 40;
-    static const float mainSourcePhase1VY = 2.0;
-    static const float mainSourcePhase2VY = 4.0;
-    static const float mainSourcePhase3VY = 4.0;
+    static const float mainSourcePhase1VY = 1.0;
+    static const float mainSourcePhase2VY = 2.0;
+    static const float mainSourcePhase3VY = 2.0;
 
     static const float thermalBuoyancyFactor = 0.1;
 

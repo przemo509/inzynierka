@@ -33,6 +33,11 @@ ExplosionSimulation::ExplosionSimulation() {
     allocate3D(dens);
     allocate3D(densPrev);
 
+    vortices = new Vortex*[config::maxVortices];
+    for(int i = 0; i < config::maxVortices; ++i) {
+        vortices[i] = NULL;
+    }
+
     setStartingConditions();
 }
 
@@ -86,6 +91,22 @@ void ExplosionSimulation::setStartingConditions() {
         }
     }
 
+    for(int i = 0; i < config::maxVortices; ++i) {
+        if(vortices[i] != NULL) {
+            delete vortices[i];
+        }
+    }
+    int v = 0;
+    int multiplier = size / config::vorticesInRow;
+    for (int k = 0; k < config::vorticesInRow; ++k) {
+        for (int j = 0; j < config::vorticesInRow; ++j) {
+            for (int i = 0; i < config::vorticesInRow; ++i) {
+                vortices[v++] = new Vortex(i*multiplier, j*multiplier, k*multiplier);
+            }
+        }
+    }
+
+
     playbackIsOn = config::autoPlay;
 }
 
@@ -100,6 +121,7 @@ void ExplosionSimulation::proceed() {
 
     addSources();
     addForces();
+    addTurbulences();
     calculateVelocities();
     calculateDensities();
 }
@@ -144,6 +166,16 @@ void ExplosionSimulation::addForces() {
                 }
             }
         }
+    }
+}
+
+void ExplosionSimulation::addTurbulences() {
+    if(!config::simulateTurbulences) {
+        return;
+    }
+
+    for(int i = 0; i < config::maxVortices; ++i) {
+        vortices[i]->apply(vx, vy, vz, N + 2);
     }
 }
 

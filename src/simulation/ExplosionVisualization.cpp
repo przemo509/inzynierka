@@ -82,7 +82,11 @@ ExplosionVisualization::~ExplosionVisualization() {
 }
 
 void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulation) {
+    int N = simulation->N;
+    float elementSize = size / N;
+
     drawDomain();
+    drawVortices(simulation->vortices, elementSize);
 
     int closest = getCornerClosestToCamera(camera->position);
 
@@ -180,9 +184,6 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
 //    drawLine(leftTop, leftBottom);
 //    glEnd();
 
-    int N = simulation->N;
-    float elementSize = size / N;
-
     for (int j = 0; j < textureResolution; ++j) {
         for (int i = 0; i < textureResolution; ++i) {
             render[i][j] = 0.0f;
@@ -271,7 +272,7 @@ void ExplosionVisualization::drawRenderToTexture() {
     glBegin(GL_POINTS);
     for (int j = 0; j < textureResolution; ++j) {
         for (int i = 0; i < textureResolution; ++i) {
-            int value = 1-exp(-render[i][j]) * 255;
+            int value = (1-exp(-render[i][j])) * 255;
             if (value > 255) {
                 glColor3ub(255, 0, 255);
             } else {
@@ -288,6 +289,24 @@ void ExplosionVisualization::drawRenderToTexture() {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
+}
+
+void ExplosionVisualization::drawVortices(Vortex** vortices, float spaceUnit) {
+    if (!config::drawVortices) {
+        return;
+    }
+
+    for(int i = 0; i < config::maxVortices; ++i) {
+        Vortex *v = vortices[i];
+        glPushMatrix();
+        {
+            glColor3ub(v->isActive() ? 0 : 255, v->isActive() ? 255 : 0, 0);
+            Point p = moveToStartCorner.translate(v->position);
+            glTranslatef(p.x, p.y, -p.z);
+            glutWireSphere(spaceUnit * v->radius, 10, 10);
+        }
+        glPopMatrix();
+    }
 }
 
 void ExplosionVisualization::drawDomain() {
