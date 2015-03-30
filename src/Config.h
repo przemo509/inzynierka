@@ -16,10 +16,11 @@ namespace config {
     static const int maxFrames = 200;
 
     static const bool simulateTurbulences = true;
-    static const int vorticesInRow = 7;
-    static const int maxVortices = vorticesInRow * vorticesInRow * vorticesInRow;
+    static const int vorticesCount = 200;
     static const float vortexStrenght = 0.01;
-    static const int vortexMoving = 3;
+    static const int vortexMoving = 20;
+    static const int vortexRadiusMin = 2;
+    static const int vortexRadiusMax = 3;
 
     static const int simulationSpaceSize = 50;
 
@@ -28,22 +29,31 @@ namespace config {
     static const float diffusionRate = 0.0001;
 
     static const int mainSourceHeight = 3;
-    static const int mainSourceRadius = 5;
+    static const int mainSourceRadius = 10;
     static const int mainSourceCenterX = 0 + mainSourceRadius + 5; // po lewej stronie, trochę dalej od krawędzi;
     static const int mainSourceCenterZ = simulationSpaceSize / 2;
-    static const float mainSourceDensity = 0.4;
-    static const float mainSourceSpreadFactor = 0.01;
-    static const int mainSourceStartFrame = 5;
-    static const int mainSourceStartPhase2Frame = 15;
-    static const int mainSourceStartPhase3Frame = 40;
-    static const float mainSourcePhase1VY = 1.0;
-    static const float mainSourcePhase2VY = 2.0;
-    static const float mainSourcePhase3VY = 2.0;
+    static const float mainSourceDensity = 0.1;
+    static const float mainSourceSpreadFactor = 0.2;
+    static const float vySlow = 0.02;
+    static const float vyMedium = 0.5;
+    static const float vyFast = 0.6;
+    static const float mainSourceVY = vySlow;
+    static const float explosionSource[][2] = {
+                                             {0, 0.0},
+                                             {5, vySlow},
+                                             {30, vyMedium},
+                                             {60, vyFast},
+                                             {85, vySlow},
+                                             {110, vyMedium},
+                                             {160, vyFast},
+                                             {maxFrames, 0.0}
+    };
+    static const int explosionSourcePhases = sizeof(explosionSource)/sizeof(config::explosionSource[0]);
 
-    static const float thermalBuoyancyFactor = 0.1;
+    static const float thermalBuoyancyFactor = 0.8;
 
-    static const float gravityFactor = 0.001;
-    static const float windFactor = 0.2;
+    static const float gravityFactor = 0.003;
+    static const float windFactor = 0.1;
 
     static const int relaxationSteps = 12; // liczba iteracji relaksacji Gaussa-Seidela
 

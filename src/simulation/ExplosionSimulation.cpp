@@ -9,10 +9,10 @@
 #include "ExplosionSimulation.h"
 #include "../utils/OpenGLInclude.h"
 #include "../utils/Timer.h"
-#include <stdlib.h>
+#include "../utils/MathUtils.h"
+#include "../Config.h"
 #include <algorithm>
 #include <cmath> // sin
-#include "../Config.h"
 
 ExplosionSimulation::ExplosionSimulation() {
     N = config::simulationSpaceSize;
@@ -33,8 +33,8 @@ ExplosionSimulation::ExplosionSimulation() {
     allocate3D(dens);
     allocate3D(densPrev);
 
-    vortices = new Vortex*[config::maxVortices];
-    for(int i = 0; i < config::maxVortices; ++i) {
+    vortices = new Vortex*[config::vorticesCount];
+    for(int i = 0; i < config::vorticesCount; ++i) {
         vortices[i] = NULL;
     }
 
@@ -91,19 +91,20 @@ void ExplosionSimulation::setStartingConditions() {
         }
     }
 
-    for(int i = 0; i < config::maxVortices; ++i) {
+    for(int i = 0; i < config::vorticesCount; ++i) {
         if(vortices[i] != NULL) {
             delete vortices[i];
         }
     }
-    int v = 0;
-    int multiplier = size / config::vorticesInRow;
-    for (int k = 0; k < config::vorticesInRow; ++k) {
-        for (int j = 0; j < config::vorticesInRow; ++j) {
-            for (int i = 0; i < config::vorticesInRow; ++i) {
-                vortices[v++] = new Vortex(i*multiplier, j*multiplier, k*multiplier);
-            }
-        }
+    int vortexInitY = 10;
+    int vorticeStartsFromFrame = 10;
+    int vorticeStartsToFrame = config::maxFrames;
+    float vortexEveryFrame = (float)(vorticeStartsToFrame - vorticeStartsFromFrame) / config::vorticesCount;
+    for (int v = 0; v < config::vorticesCount; ++v) {
+        vortices[v] = new Vortex(randAround(config::mainSourceCenterX, 2),
+                                 vortexInitY,
+                                 randAround(config::mainSourceCenterZ, 2),
+                                 v*vortexEveryFrame);
     }
 
 
@@ -127,10 +128,7 @@ void ExplosionSimulation::proceed() {
 }
 
 void ExplosionSimulation::addSources() {
-    int currentFrame = Timer::getInstance().getCurrentFrame();
-    if (currentFrame < config::mainSourceStartFrame) {
-        return;
-    }
+    const int currentFrame = Timer::getInstance().getCurrentFrame();
 
     int height = config::mainSourceHeight;
     int radius = config::mainSourceRadius;
@@ -143,12 +141,16 @@ void ExplosionSimulation::addSources() {
                 dens[i][j][k] += dt / (sqrt((i - centerX) * (i - centerX) + (k - centerZ) * (k - centerZ)) + 0.01) * config::mainSourceDensity;
                 vx[i][j][k] += dt * sin(i - centerX) * config::mainSourceSpreadFactor; // na zewnątrz
                 vz[i][j][k] += dt * sin(k - centerZ) * config::mainSourceSpreadFactor; // na zewnątrz
-                if (currentFrame < config::mainSourceStartPhase2Frame) {
-                    vy[i][j][k] += dt * config::mainSourcePhase1VY;
-                } else if (currentFrame < config::mainSourceStartPhase3Frame) {
-                    vy[i][j][k] += dt * config::mainSourcePhase2VY;
-                } else {
-                    vy[i][j][k] += dt * config::mainSourcePhase3VY;
+                vy[i][j][k] += dt * config::mainSourceVY;
+
+                for (int nextPhase = 1; nextPhase < config::explosionSourcePhases; ++nextPhase) {
+                    int nextPhaseStartFrame = config::explosionSource[nextPhase][0];
+                    if(nextPhaseStartFrame > currentFrame) {
+                        const float phaseVelocity = config::explosionSource[nextPhase - 1][1];
+                        vy[i][j][k] += dt * phaseVelocity;
+                        break;
+                    }
+
                 }
             }
         }
@@ -160,7 +162,7 @@ void ExplosionSimulation::addForces() {
     for (int k = 0; k < size; ++k) {
         for (int j = 0; j < size; ++j) {
             for (int i = 0; i < size; ++i) {
-                vy[i][j][k] += dt * (-1.0 * config::gravityFactor + dens[i][j][k] * config::thermalBuoyancyFactor);
+                vy[i][j][k] += dt * (-1.0 * config::gravityFactor + dens[i][j][k] * config::thermalBuoyancyFactor / (j > 0 ? j : 1));
                 if (i < 5) {
                     vx[i][j][k] += dt * config::windFactor;
                 }
@@ -174,7 +176,7 @@ void ExplosionSimulation::addTurbulences() {
         return;
     }
 
-    for(int i = 0; i < config::maxVortices; ++i) {
+    for(int i = 0; i < config::vorticesCount; ++i) {
         vortices[i]->apply(vx, vy, vz, N + 2);
     }
 }

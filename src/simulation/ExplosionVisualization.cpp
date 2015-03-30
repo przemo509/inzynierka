@@ -272,7 +272,7 @@ void ExplosionVisualization::drawRenderToTexture() {
     glBegin(GL_POINTS);
     for (int j = 0; j < textureResolution; ++j) {
         for (int i = 0; i < textureResolution; ++i) {
-            int value = (1-exp(-render[i][j])) * 255;
+            int value = (1-exp(-2*render[i][j])) * 255;
             if (value > 255) {
                 glColor3ub(255, 0, 255);
             } else {
@@ -296,14 +296,16 @@ void ExplosionVisualization::drawVortices(Vortex** vortices, float spaceUnit) {
         return;
     }
 
-    for(int i = 0; i < config::maxVortices; ++i) {
+    for(int i = 0; i < config::vorticesCount; ++i) {
         Vortex *v = vortices[i];
         glPushMatrix();
         {
             glColor3ub(v->isActive() ? 0 : 255, v->isActive() ? 255 : 0, 0);
             Point p = moveToStartCorner.translate(v->position);
-            glTranslatef(p.x, p.y, -p.z);
-            glutWireSphere(spaceUnit * v->radius, 10, 10);
+            glTranslatef(v->position.x/2 - config::mainSourceCenterX+20,
+                         v->position.y-5,
+                         -(v->position.z - config::mainSourceCenterZ));
+            glutWireSphere(spaceUnit * v->radius/10, 10, 10);
         }
         glPopMatrix();
     }

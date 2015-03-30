@@ -12,7 +12,7 @@
 
 class Vortex {
     public:
-        Vortex(int x, int y, int z);
+        Vortex(int x, int y, int z, int startFrame);
         virtual ~Vortex();
         bool isActive();
         void apply(vect3f vx, vect3f vy, vect3f vz, int N);

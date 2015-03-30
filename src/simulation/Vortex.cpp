@@ -7,17 +7,17 @@
 
 #include "Vortex.h"
 #include "../utils/Timer.h"
+#include "../utils/MathUtils.h"
 #include "../Config.h"
-#include <cstdlib> //rand
 
-Vortex::Vortex(int x, int y, int z) {
-    startFrame = 20;
+Vortex::Vortex(int x, int y, int z, int startFrame) {
+    this->startFrame = startFrame;
 
     position = Point(x, y, z);
     startingPosition = Point(x, y, z);
-    direction = Vector(rand() % 5, rand() % 5, rand() % 5);
-    radius = 5;
-    lifeFrames = 120;
+    direction = Vector(rand(0, 50), rand(0, 50), rand(0, 50));
+    radius = rand(config::vortexRadiusMin, config::vortexRadiusMax);
+    lifeFrames = config::maxFrames - this->startFrame;
 }
 
 Vortex::~Vortex() {
@@ -45,9 +45,9 @@ void Vortex::apply(vect3f vx, vect3f vy, vect3f vz, int N) {
                 if(i >= N) break;
                 Vector windDirection = Vector(position, Point(i, j, k)).crossProduct(direction);
                 windDirection.normalize();
-                vx[i][j][k] += config::vortexStrenght * windDirection.x;
-                vy[i][j][k] += config::vortexStrenght * windDirection.y;
-                vz[i][j][k] += config::vortexStrenght * windDirection.z;
+                vx[i][j][k] += config::vortexStrenght / radius * windDirection.x;
+                vy[i][j][k] += config::vortexStrenght / radius * windDirection.y;
+                vz[i][j][k] += config::vortexStrenght / radius * windDirection.z;
             }
         }
     }
