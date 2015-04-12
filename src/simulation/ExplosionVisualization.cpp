@@ -10,6 +10,7 @@
 #include "../utils/GlutUtils.h"
 #include "../utils/Logger.h"
 #include "../Config.h"
+#include "../utils/ColorUtils.h"
 
 ExplosionVisualization::ExplosionVisualization() : gauss {
     {0.00f, 0.03f, 0.08f, 0.12f, 0.08f, 0.03f, 0.00f},
@@ -39,6 +40,8 @@ ExplosionVisualization::ExplosionVisualization() : gauss {
     for (int i = 0; i < textureResolution; ++i) {
         render[i] = new float[textureResolution];
     }
+
+    tmpColor = new float[4];
 }
 
 // musi być po glewInit(), czyli nie może być w konstruktorze
@@ -70,6 +73,8 @@ ExplosionVisualization::~ExplosionVisualization() {
         delete[] render[i];
     }
     delete[] render;
+
+    delete[] tmpColor;
 
     // And in the end, cleanup
 
@@ -272,12 +277,8 @@ void ExplosionVisualization::drawRenderToTexture() {
     glBegin(GL_POINTS);
     for (int j = 0; j < textureResolution; ++j) {
         for (int i = 0; i < textureResolution; ++i) {
-            int value = (1-exp(-2*render[i][j])) * 255;
-            if (value > 255) {
-                glColor3ub(255, 0, 255);
-            } else {
-                glColor3ub(value, value, value);
-            }
+            calculateSmokeColor(tmpColor, render[i][j]);
+            glColor4fv(tmpColor);
             glVertex2i(i, j);
         }
     }

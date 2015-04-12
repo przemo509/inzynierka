@@ -48,7 +48,7 @@ void initOpenGlEnvironment(int argc, char **argv) {
     glewInit();
     scene.visualization.initFBO(); // musi być po glewInit(), więc nie mogłobyć w konstruktorze Scene()
 
-    glClearColor(0.0, 0.0, 0.0, 1.0); // czyszczenie ekranu na czarno
+    glClearColor(config::colorSky[0], config::colorSky[1], config::colorSky[2], 1.0);
 
     glutIgnoreKeyRepeat(1); //TODO co to robi? i jeszcze to: glutSetKeyRepeat()
 

@@ -43,6 +43,8 @@ class ExplosionVisualization {
 
         static const int gaussSize = 7;
         float gauss[gaussSize][gaussSize];
+
+        float * tmpColor;
 };
 
 /*

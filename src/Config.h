@@ -16,9 +16,9 @@ namespace config {
     static const int maxFrames = 200;
 
     static const bool simulateTurbulences = true;
-    static const int vorticesCount = 200;
+    static const int vorticesCount = 100;
     static const float vortexStrenght = 0.01;
-    static const int vortexMoving = 20;
+    static const int vortexMoving = 10;
     static const int vortexRadiusMin = 2;
     static const int vortexRadiusMax = 3;
 
@@ -43,8 +43,8 @@ namespace config {
                                              {5, vySlow},
                                              {30, vyMedium},
                                              {60, vyFast},
-                                             {85, vySlow},
-                                             {110, vyMedium},
+                                             {85, vyFast},
+                                             {110, vyFast},
                                              {160, vyFast},
                                              {maxFrames, 0.0}
     };
@@ -60,6 +60,11 @@ namespace config {
     // wizualizacja
     static const float distanceFactor = 0.01;
     static const int textureResolution = 256;
+
+    static const float colorSmokeBright[] = {0.6, 0.6, 0.6};
+    static const float colorSmokeDark[] = {0.0, 0.0, 0.0};
+    static const float colorSky[] = {0.0, 0.0, 0.0};
+    static const float smokeColorThreshold = 0.1;
 
 }
 
