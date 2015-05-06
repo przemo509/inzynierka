@@ -11,6 +11,7 @@
 #include "../utils/Logger.h"
 #include "../Config.h"
 #include "../utils/ColorUtils.h"
+#include "../utils/MathUtils.h"
 
 ExplosionVisualization::ExplosionVisualization() : gauss {
     {0.00f, 0.03f, 0.08f, 0.12f, 0.08f, 0.03f, 0.00f},
@@ -199,7 +200,7 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
     for (int k = 1; k <= N; ++k) {
         for (int j = 1; j <= N; ++j) {
             for (int i = 1; i <= N; ++i) {
-                float densValue = simulation->dens[i][j][k];
+                float densValue = simulation->dens[i][j][k] / (config::splattingSuperSampling ? 3 : 1.5);
                 if (densValue <= 0) {
                     continue;
                 }
@@ -207,8 +208,8 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
                 Vector toCamera = Vector(densityPoint, camera->position);
                 Point intersection = plane.intersection(densityPoint, toCamera);
                 Vector toIntersection = Vector(leftBottom, intersection);
-                float dx = right.dotProduct(toIntersection);
-                float dy = up.dotProduct(toIntersection);
+                float dx = right.dotProduct(toIntersection) * randAroundFloat(1.0, config::splattingDislocation);
+                float dy = up.dotProduct(toIntersection) * randAroundFloat(1.0, config::splattingDislocation);
                 int renderX = dx / renderElementSize;
                 int renderY = dy / renderElementSize;
                 float distance = toCamera.length();
@@ -219,6 +220,40 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
                         int y = renderY - gj - gaussSize / 2;
                         if (x >= 0 && x < textureResolution && y >= 0 && y < textureResolution) {
                             render[x][y] += baseValue * gauss[gi][gj];
+                        }
+                    }
+                }
+
+                if(config::splattingSuperSampling) {
+                    densValue = (
+                            simulation->dens[i  ][j  ][k  ] +
+                            simulation->dens[i  ][j  ][k+1] +
+                            simulation->dens[i  ][j+1][k  ] +
+                            simulation->dens[i  ][j+1][k+1] +
+                            simulation->dens[i+1][j  ][k  ] +
+                            simulation->dens[i+1][j  ][k+1] +
+                            simulation->dens[i+1][j+1][k  ] +
+                            simulation->dens[i+1][j+1][k+1]) / 24;
+                    if (densValue <= 0) {
+                        continue;
+                    }
+                    densityPoint = moveToStartCorner.translate(Point(elementSize * (1.0*i+0.5), elementSize * (1.0*j+0.5), -elementSize * (1.0*k+0.5)));
+                    toCamera = Vector(densityPoint, camera->position);
+                    intersection = plane.intersection(densityPoint, toCamera);
+                    toIntersection = Vector(leftBottom, intersection);
+                    dx = right.dotProduct(toIntersection) * randAroundFloat(1.0, config::splattingDislocation);
+                    dy = up.dotProduct(toIntersection) * randAroundFloat(1.0, config::splattingDislocation);
+                    renderX = dx / renderElementSize;
+                    renderY = dy / renderElementSize;
+                    distance = toCamera.length();
+                    baseValue = densValue * distance * config::distanceFactor;
+                    for (int gj = 0; gj < gaussSize; ++gj) {
+                        for (int gi = 0; gi < gaussSize; ++gi) {
+                            int x = renderX - gi - gaussSize / 2;
+                            int y = renderY - gj - gaussSize / 2;
+                            if (x >= 0 && x < textureResolution && y >= 0 && y < textureResolution) {
+                                render[x][y] += baseValue * gauss[gi][gj];
+                            }
                         }
                     }
                 }

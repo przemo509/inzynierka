@@ -66,6 +66,9 @@ namespace config {
     static const float colorSky[] = {0.0, 0.0, 0.0};
     static const float smokeColorThreshold = 0.1;
 
+    static const float splattingDislocation = 0.0;//0.001;
+    static const bool splattingSuperSampling = true;
+
 }
 
 #endif /* CONFIG_H_ */
