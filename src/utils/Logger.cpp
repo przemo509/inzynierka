@@ -7,6 +7,7 @@
 
 #include "Logger.h"
 #include "../utils/OpenGLInclude.h"
+#include "../Config.h"
 #include <cstdio>
 
 using namespace std;
@@ -28,7 +29,7 @@ void Logger::printOnScreen() {
     glPushMatrix();
     glLoadIdentity();
 
-    glColor3f(0.0, 1.0, 0.0); // Green
+    glColor4fv(config::colorSmokeBright); // taki sam jak dym, żeby konwersja na avi nie dodawała zielonego koloru
 
     int lineNumber = 1;
     void * font = GLUT_BITMAP_9_BY_15;
