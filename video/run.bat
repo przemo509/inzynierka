@@ -1,2 +1,2 @@
-ffmpeg.exe -f image2 -i ..\frames\test_%%d.tga -vcodec mpeg4 -b:v 10000k video.avi
+ffmpeg.exe -i ..\frames\test_%%d.tga -c:v ffv1 -qscale:v 0 video.avi
 start video.avi
