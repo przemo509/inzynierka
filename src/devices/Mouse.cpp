@@ -1,10 +1,3 @@
-/*
- * Mouse.cpp
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
 #include "Mouse.h"
 #include "../utils/OpenGLInclude.h"
 

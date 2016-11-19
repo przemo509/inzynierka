@@ -1,10 +1,3 @@
-/*
- * Skybox.h
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
 #ifndef SKYBOX_H_
 #define SKYBOX_H_
 

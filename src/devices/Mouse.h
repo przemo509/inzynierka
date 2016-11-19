@@ -1,10 +1,3 @@
-/*
- * Mouse.h
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
 #ifndef MOUSE_H_
 #define MOUSE_H_
 

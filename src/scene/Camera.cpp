@@ -1,10 +1,3 @@
-/*
- * Camera2.cpp
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
 #include "Camera.h"
 #include "../utils/OpenGLInclude.h"
 #include <cmath>
@@ -115,11 +108,8 @@ void Camera::update(Keyboard* keyboard, Mouse* mouse) {
     }
 
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity(); //TODO potrzebne? tak samo jak matrix mode?
+    glLoadIdentity();
     gluLookAt(position.x, position.y, position.z, position.x - direction.x, position.y - direction.y, position.z - direction.z, 0.0, 1.0, 0.0);
-    Logger::getInstance().addLineToScreen(2, "x %f y %f z %f dirX %f dirY %f dirZ %f", position.x, position.y, position.z, direction.x, direction.y,
-                                          direction.z);
-    Logger::getInstance().addLineToScreen(3, "vAng %f hAng %f", verticalAngle, horizontalAngle);
 }
 
 void Camera::movePerpendicularToView(float amount) {

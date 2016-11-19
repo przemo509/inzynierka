@@ -1,10 +1,3 @@
-/*
- * GlutUtils.h
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
 #ifndef GLUTUTILS_H_
 #define GLUTUTILS_H_
 

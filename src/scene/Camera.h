@@ -1,12 +1,5 @@
-/*
- * Camera2.h
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
-#ifndef CAMERA2_H_
-#define CAMERA2_H_
+#ifndef CAMERA_H_
+#define CAMERA_H_
 
 #include <string>
 #include "../utils/GeometryUtils.h"
@@ -54,4 +47,4 @@ class Camera {
         friend class ExplosionVisualization;
 };
 
-#endif /* CAMERA2_H_ */
+#endif /* CAMERA_H_ */

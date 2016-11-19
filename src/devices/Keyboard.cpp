@@ -1,20 +1,11 @@
-/*
- * Keyboard.cpp
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
 #include "Keyboard.h"
 #include <ctype.h>
 
 Keyboard::Keyboard() {
-    // TODO Auto-generated constructor stub
 
 }
 
 Keyboard::~Keyboard() {
-    // TODO Auto-generated destructor stub
 }
 
 bool Keyboard::isAsciiKeyPressed(unsigned char key) {

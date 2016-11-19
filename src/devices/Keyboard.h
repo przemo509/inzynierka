@@ -1,10 +1,3 @@
-/*
- * Keyboard.h
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
 #ifndef KEYBOARD_H_
 #define KEYBOARD_H_
 

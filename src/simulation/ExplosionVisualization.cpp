@@ -1,28 +1,25 @@
-/*
- * ExplosionVisualization.cpp
- *
- *  Created on: 1 wrz 2014
- *      Author: Przemo
- */
-
 #include "ExplosionVisualization.h"
 #include "../utils/OpenGLInclude.h"
 #include "../utils/GlutUtils.h"
 #include "../utils/Logger.h"
-#include "../Config.h"
+#include "../utils/Config.h"
 #include "../utils/ColorUtils.h"
 #include "../utils/MathUtils.h"
 
-ExplosionVisualization::ExplosionVisualization() : gauss {
-    {0.00f, 0.03f, 0.08f, 0.12f, 0.08f, 0.03f, 0.00f},
-    {0.03f, 0.18f, 0.43f, 0.55f, 0.43f, 0.18f, 0.03f},
-    {0.09f, 0.43f, 0.79f, 0.91f, 0.79f, 0.43f, 0.09f},
-    {0.12f, 0.55f, 0.91f, 0.98f, 0.91f, 0.55f, 0.12f},
-    {0.09f, 0.43f, 0.79f, 0.91f, 0.79f, 0.43f, 0.09f},
-    {0.03f, 0.18f, 0.43f, 0.55f, 0.43f, 0.18f, 0.03f},
-    {0.00f, 0.03f, 0.08f, 0.12f, 0.08f, 0.03f, 0.00f}} {
+ExplosionVisualization::ExplosionVisualization(ExplosionSimulation *simulation, Camera *camera) :
+    simulation(simulation),
+    camera(camera),
+    gauss {
+        {0.00f, 0.03f, 0.08f, 0.12f, 0.08f, 0.03f, 0.00f},
+        {0.03f, 0.18f, 0.43f, 0.55f, 0.43f, 0.18f, 0.03f},
+        {0.09f, 0.43f, 0.79f, 0.91f, 0.79f, 0.43f, 0.09f},
+        {0.12f, 0.55f, 0.91f, 0.98f, 0.91f, 0.55f, 0.12f},
+        {0.09f, 0.43f, 0.79f, 0.91f, 0.79f, 0.43f, 0.09f},
+        {0.03f, 0.18f, 0.43f, 0.55f, 0.43f, 0.18f, 0.03f},
+        {0.00f, 0.03f, 0.08f, 0.12f, 0.08f, 0.03f, 0.00f}} {
 
     size = 20.0f;
+    elementSize = size / simulation->N;
     origin = Point(0.0f, 0.1f, 0.0f);
     cornersCount = 8;
     corners = new Point[cornersCount];
@@ -36,7 +33,7 @@ ExplosionVisualization::ExplosionVisualization() : gauss {
     corners[7] = Point(origin.x + size / 2, origin.y + size, origin.z + size / 2);
     moveToStartCorner = Vector(origin, corners[1]);
 
-    textureResolution = config::textureResolution;
+    textureResolution = Config::getInstance()->textureResolution;
     render = new float*[textureResolution];
     for (int i = 0; i < textureResolution; ++i) {
         render[i] = new float[textureResolution];
@@ -77,26 +74,18 @@ ExplosionVisualization::~ExplosionVisualization() {
 
     delete[] tmpColor;
 
-    // And in the end, cleanup
-
-    //Delete resources
     glDeleteTextures(1, &textureID);
     glDeleteRenderbuffers(1, &depthRenderBufferID);
-    //Bind 0, which means render to back buffer, as a result, fb is unbound
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDeleteFramebuffers(1, &frameBufferID);
 }
 
-void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulation) {
-    int N = simulation->N;
-    float elementSize = size / N;
-
+void ExplosionVisualization::draw() {
     drawDomain();
-    drawVortices(simulation->vortices, elementSize);
+    drawVortices();
 
-    int closest = getCornerClosestToCamera(camera->position);
+    int closest = getCornerClosestToCamera();
 
-    // https://www.youtube.com/watch?v=s5m391a5HFg
     // wyznaczamy równanie płaszczyzny przechodzącej przez najbliższy narożnik
     Vector planeNormal = camera->direction.flip();
     Plane plane = Plane(planeNormal, corners[closest]);
@@ -106,7 +95,7 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
         intersections[i] = plane.intersection(camera->position, Vector(camera->position, corners[i]));
     }
 
-    Vector up = getUpDirection(closest, plane, camera->direction);
+    Vector up = getUpDirection(closest, plane);
     Vector right = planeNormal.crossProduct(up);
     right.normalize();
 
@@ -139,7 +128,6 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
         }
     }
 
-    // todo zrobić do tego funkcję, obczaić referencję i jej stałość
     Point leftBottom = intersections[mostBottom];
     if (mostLeft != mostBottom) {
         float dx = -right.dotProduct(Vector(intersections[mostBottom], intersections[mostLeft]));
@@ -182,13 +170,15 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
         width += difference;
     }
 
-//    glColor3ub(0, 255, 255);
-//    glBegin(GL_LINES);
-//    drawLine(leftBottom, rightBottom);
-//    drawLine(rightBottom, rightTop);
-//    drawLine(rightTop, leftTop);
-//    drawLine(leftTop, leftBottom);
-//    glEnd();
+    if(Config::getInstance()->drawSplattingPlane) {
+        glColor3ub(0, 255, 255);
+        glBegin(GL_LINES);
+        drawLine(leftBottom, rightBottom);
+        drawLine(rightBottom, rightTop);
+        drawLine(rightTop, leftTop);
+        drawLine(leftTop, leftBottom);
+        glEnd();
+    }
 
     for (int j = 0; j < textureResolution; ++j) {
         for (int i = 0; i < textureResolution; ++i) {
@@ -197,10 +187,10 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
     }
     float renderElementSize = width / textureResolution;
 
-    for (int k = 1; k <= N; ++k) {
-        for (int j = 1; j <= N; ++j) {
-            for (int i = 1; i <= N; ++i) {
-                float densValue = simulation->dens[i][j][k] / (config::splattingSuperSampling ? 3 : 1.5);
+    for (int k = 1; k <= simulation->N; ++k) {
+        for (int j = 1; j <= simulation->N; ++j) {
+            for (int i = 1; i <= simulation->N; ++i) {
+                float densValue = simulation->dens[i][j][k] / (Config::getInstance()->splattingSuperSampling ? 3 : 1.5);
                 if (densValue <= 0) {
                     continue;
                 }
@@ -208,12 +198,12 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
                 Vector toCamera = Vector(densityPoint, camera->position);
                 Point intersection = plane.intersection(densityPoint, toCamera);
                 Vector toIntersection = Vector(leftBottom, intersection);
-                float dx = right.dotProduct(toIntersection) * randAroundFloat(1.0, config::splattingDislocation);
-                float dy = up.dotProduct(toIntersection) * randAroundFloat(1.0, config::splattingDislocation);
+                float dx = right.dotProduct(toIntersection) * randAroundFloat(1.0, Config::getInstance()->splattingDislocation);
+                float dy = up.dotProduct(toIntersection) * randAroundFloat(1.0, Config::getInstance()->splattingDislocation);
                 int renderX = dx / renderElementSize;
                 int renderY = dy / renderElementSize;
                 float distance = toCamera.length();
-                float baseValue = densValue * distance * config::distanceFactor;
+                float baseValue = densValue / distance * Config::getInstance()->distanceFactor;
                 for (int gj = 0; gj < gaussSize; ++gj) {
                     for (int gi = 0; gi < gaussSize; ++gi) {
                         int x = renderX - gi - gaussSize / 2;
@@ -224,7 +214,7 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
                     }
                 }
 
-                if(config::splattingSuperSampling) {
+                if(Config::getInstance()->splattingSuperSampling) {
                     densValue = (
                             simulation->dens[i  ][j  ][k  ] +
                             simulation->dens[i  ][j  ][k+1] +
@@ -241,12 +231,12 @@ void ExplosionVisualization::draw(Camera *camera, ExplosionSimulation *simulatio
                     toCamera = Vector(densityPoint, camera->position);
                     intersection = plane.intersection(densityPoint, toCamera);
                     toIntersection = Vector(leftBottom, intersection);
-                    dx = right.dotProduct(toIntersection) * randAroundFloat(1.0, config::splattingDislocation);
-                    dy = up.dotProduct(toIntersection) * randAroundFloat(1.0, config::splattingDislocation);
+                    dx = right.dotProduct(toIntersection) * randAroundFloat(1.0, Config::getInstance()->splattingDislocation);
+                    dy = up.dotProduct(toIntersection) * randAroundFloat(1.0, Config::getInstance()->splattingDislocation);
                     renderX = dx / renderElementSize;
                     renderY = dy / renderElementSize;
                     distance = toCamera.length();
-                    baseValue = densValue * distance * config::distanceFactor;
+                    baseValue = densValue / distance * Config::getInstance()->distanceFactor;
                     for (int gj = 0; gj < gaussSize; ++gj) {
                         for (int gi = 0; gi < gaussSize; ++gi) {
                             int x = renderX - gi - gaussSize / 2;
@@ -327,28 +317,28 @@ void ExplosionVisualization::drawRenderToTexture() {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void ExplosionVisualization::drawVortices(Vortex** vortices, float spaceUnit) {
-    if (!config::drawVortices) {
+void ExplosionVisualization::drawVortices() {
+    if (!Config::getInstance()->drawVortices) {
         return;
     }
 
-    for(int i = 0; i < config::vorticesCount; ++i) {
-        Vortex *v = vortices[i];
+    for(int i = 0; i < Config::getInstance()->vorticesCount; ++i) {
+        Vortex *v = simulation->vortices[i];
         glPushMatrix();
         {
             glColor3ub(v->isActive() ? 0 : 255, v->isActive() ? 255 : 0, 0);
             Point p = moveToStartCorner.translate(v->position);
-            glTranslatef(v->position.x/2 - config::mainSourceCenterX+20,
+            glTranslatef(v->position.x/2 - Config::getInstance()->mainSourceCenterX+20,
                          v->position.y-5,
-                         -(v->position.z - config::mainSourceCenterZ));
-            glutWireSphere(spaceUnit * v->radius/10, 10, 10);
+                         -(v->position.z - Config::getInstance()->mainSourceCenterZ));
+            glutWireSphere(elementSize * v->radius/10, 10, 10);
         }
         glPopMatrix();
     }
 }
 
 void ExplosionVisualization::drawDomain() {
-    if (!config::drawDomain) {
+    if (!Config::getInstance()->drawDomain) {
         return;
     }
 
@@ -372,12 +362,15 @@ void ExplosionVisualization::drawDomain() {
     glEnd();
 }
 
-int ExplosionVisualization::getCornerClosestToCamera(Point& cameraPosition) {
+/*
+ * Zwraca indeks wierzchołka kostki znajdującego się najbliżej kamery.
+ */
+int ExplosionVisualization::getCornerClosestToCamera() {
     int closest = 0;
-    float closestDist = cameraPosition.distance(corners[0]);
+    float closestDist = camera->position.distance(corners[0]);
 
     for (int i = 1; i < cornersCount; ++i) {
-        float dist = cameraPosition.distance(corners[i]);
+        float dist = camera->position.distance(corners[i]);
         if (dist < closestDist) {
             closest = i;
             closestDist = dist;
@@ -387,9 +380,12 @@ int ExplosionVisualization::getCornerClosestToCamera(Point& cameraPosition) {
     return closest;
 }
 
-Vector ExplosionVisualization::getUpDirection(int closest, Plane& plane, Vector& cameraDirection) {
+/**
+ *
+ */
+Vector ExplosionVisualization::getUpDirection(int closest, Plane& plane) {
     Point aboveClosest = Vector(0.0, 10.0, 0.0).translate(corners[closest]);
-    Point aboveClosestThrewOnPlane = plane.intersection(aboveClosest, cameraDirection);
+    Point aboveClosestThrewOnPlane = plane.intersection(aboveClosest, camera->direction);
     Vector up = Vector(corners[closest], aboveClosestThrewOnPlane);
     up.normalize();
     return up;

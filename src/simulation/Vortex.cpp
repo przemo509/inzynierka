@@ -1,14 +1,7 @@
-/*
- * Vortex.cpp
- *
- *  Created on: 18 lut 2015
- *      Author: Przemo
- */
-
 #include "Vortex.h"
 #include "../utils/Timer.h"
 #include "../utils/MathUtils.h"
-#include "../Config.h"
+#include "../utils/Config.h"
 
 Vortex::Vortex(int x, int y, int z, int startFrame) {
     this->startFrame = startFrame;
@@ -16,12 +9,11 @@ Vortex::Vortex(int x, int y, int z, int startFrame) {
     position = Point(x, y, z);
     startingPosition = Point(x, y, z);
     direction = Vector(rand(0, 50), rand(0, 50), rand(0, 50));
-    radius = rand(config::vortexRadiusMin, config::vortexRadiusMax);
-    lifeFrames = config::maxFrames - this->startFrame;
+    radius = rand(Config::getInstance()->vortexRadiusMin, Config::getInstance()->vortexRadiusMax);
+    lifeFrames = Config::getInstance()->simulationLengthFrames - this->startFrame;
 }
 
 Vortex::~Vortex() {
-    // TODO Auto-generated destructor stub
 }
 
 bool Vortex::isActive() {
@@ -45,19 +37,25 @@ void Vortex::apply(vect3f vx, vect3f vy, vect3f vz, int N) {
                 if(i >= N) break;
                 Vector windDirection = Vector(position, Point(i, j, k)).crossProduct(direction);
                 windDirection.normalize();
-                vx[i][j][k] += config::vortexStrenght / radius * windDirection.x;
-                vy[i][j][k] += config::vortexStrenght / radius * windDirection.y;
-                vz[i][j][k] += config::vortexStrenght / radius * windDirection.z;
+                vx[i][j][k] += Config::getInstance()->vortexStrenght / radius * windDirection.x;
+                vy[i][j][k] += Config::getInstance()->vortexStrenght / radius * windDirection.y;
+                vz[i][j][k] += Config::getInstance()->vortexStrenght / radius * windDirection.z;
             }
         }
     }
 
-    position.x += config::vortexMoving * vx[(int)position.x][(int)position.y][(int)position.z];
-    if(position.x < 0 || position.x >= N) position.x = startingPosition.x;
+    position.x += Config::getInstance()->vortexMoving * vx[(int)position.x][(int)position.y][(int)position.z];
+    if(position.x < 0 || position.x >= N) {
+        position.x = startingPosition.x;
+    }
 
-    position.y += config::vortexMoving * vy[(int)position.x][(int)position.y][(int)position.z];
-    if(position.y < 0 || position.y >= N) position.y = startingPosition.y;
+    position.y += Config::getInstance()->vortexMoving * vy[(int)position.x][(int)position.y][(int)position.z];
+    if(position.y < 0 || position.y >= N) {
+        position.y = startingPosition.y;
+    }
 
-    position.z += config::vortexMoving * vz[(int)position.x][(int)position.y][(int)position.z];
-    if(position.z < 0 || position.z >= N) position.z = startingPosition.z;
+    position.z += Config::getInstance()->vortexMoving * vz[(int)position.x][(int)position.y][(int)position.z];
+    if(position.z < 0 || position.z >= N) {
+        position.z = startingPosition.z;
+    }
 }

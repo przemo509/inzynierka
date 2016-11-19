@@ -1,10 +1,3 @@
-/*
- * ExplosionSimulation.h
- *
- *  Created on: 28 mar 2014
- *      Author: Przemo
- */
-
 #ifndef EXPLOSIONSIMULATION_H_
 #define EXPLOSIONSIMULATION_H_
 
@@ -49,6 +42,11 @@ class ExplosionSimulation {
         void addSources();
         void addForces();
         void addTurbulences();
+        void clearSpace();
+
+        void clearVorticesIfNeeded();
+
+        void createNewVortices();
 
         friend class ExplosionVisualization;
 

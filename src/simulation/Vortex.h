@@ -1,10 +1,3 @@
-/*
- * Vortex.h
- *
- *  Created on: 18 lut 2015
- *      Author: Przemo
- */
-
 #ifndef SIMULATION_VORTEX_H_
 #define SIMULATION_VORTEX_H_
 

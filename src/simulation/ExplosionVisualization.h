@@ -1,10 +1,3 @@
-/*
- * ExplosionVisualization.h
- *
- *  Created on: 1 wrz 2014
- *      Author: Przemo
- */
-
 #ifndef EXPLOSIONVISUALIZATION_H_
 #define EXPLOSIONVISUALIZATION_H_
 
@@ -15,15 +8,19 @@
 
 class ExplosionVisualization {
     public:
-        ExplosionVisualization();
+        ExplosionVisualization(ExplosionSimulation *simulation, Camera *camera);
         virtual ~ExplosionVisualization();
 
-        void draw(Camera *camera, ExplosionSimulation *simulation);
+        void draw();
         void initFBO();
 
     private:
+        ExplosionSimulation *simulation;
+        Camera *camera;
+
         Point origin;
         float size;
+        float elementSize;
         int cornersCount;
         Point *corners;
         Vector moveToStartCorner;
@@ -32,10 +29,10 @@ class ExplosionVisualization {
         float **render;
         GLuint textureID, frameBufferID, depthRenderBufferID;
 
-        void drawVortices(Vortex** vortices, float spaceUnit);
+        void drawVortices();
         void drawDomain();
-        int getCornerClosestToCamera(Point& cameraPosition);
-        Vector getUpDirection(int closest, Plane& plane, Vector& cameraDirection);
+        int getCornerClosestToCamera();
+        Vector getUpDirection(int closest, Plane& plane);
 
         void drawTextureOnScreen(const Point& leftBottom, const Point& rightBottom, const Point& rightTop, const Point& leftTop);
 

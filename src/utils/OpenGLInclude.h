@@ -1,8 +1,8 @@
 /*
- * OpenGLInclude.h
- *
- *  Created on: 5 wrz 2014
- *      Author: Przemo
+ * Plik nagłówkowy, który należy wykorzystać wszędzie tam,
+ * gdzie potrzebny jest dostęp do OpenGL. Włącza on do źródeł
+ * pliki nagłówkowe OpenGL we właściwej kolejności. Dzieki
+ * temu nie trzeba o niej pamiętać już za każdym razem.
  */
 
 #ifndef OPENGLINCLUDE_H_

@@ -1,10 +1,3 @@
-/*
- * GeometryUtils.h
- *
- *  Created on: 3 wrz 2014
- *      Author: Przemo
- */
-
 #ifndef GEOMETRYUTILS_H_
 #define GEOMETRYUTILS_H_
 

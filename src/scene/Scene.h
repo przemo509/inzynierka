@@ -1,10 +1,3 @@
-/*
- * Scene.h
- *
- *  Created on: 24 sty 2014
- *      Author: Przemo
- */
-
 #ifndef SCENE_H_
 #define SCENE_H_
 
@@ -15,14 +8,20 @@
 
 class Scene {
     public:
-        Scene();
+        Scene(Camera *camera);
         virtual ~Scene();
-        void draw(Camera *camera);
-        ExplosionSimulation simulation;
-        ExplosionVisualization visualization;
+        void draw();
+
+        void initFBO();
+
+        void tooglePlayback();
+        void proceed();
+        void setStartingConditions();
 
     private:
-        Skybox skybox;
+        Skybox *skybox;
+        ExplosionSimulation *simulation;
+        ExplosionVisualization *visualization;
 };
 
 #endif /* SCENE_H_ */

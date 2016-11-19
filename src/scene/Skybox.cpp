@@ -1,10 +1,3 @@
-/*
- * Skybox.cpp
- *
- *  Created on: 23 sty 2014
- *      Author: Przemo
- */
-
 #include "Skybox.h"
 #include "../utils/OpenGLInclude.h"
 
